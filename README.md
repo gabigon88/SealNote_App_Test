@@ -43,6 +43,7 @@ NodeJS安裝好後使用npm命令安裝Appium與appium-doctor(可以檢查appium
 
 ### 4.設置環境變數
 終於到最後了(汗)  
+
 | 環境變數     | 值                             |
 |--------------|--------------------------------|
 | ANDROID_HOME | Android SDK的安裝路徑          |
