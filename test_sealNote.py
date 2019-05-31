@@ -1,51 +1,78 @@
 import unittest
 from time import sleep
 from appium import webdriver
+from sealNote_pageObject import sealNote_pageObject
 
 class SealNoteTest(unittest.TestCase):
     def setUp(self):
-        #app = ('D:\\sealnote25.apk') #此為受測app的apk檔路徑，需為絕對路徑
-        device='YT910R6JBG' #此為設備號，手機連上電腦後在cmd下adb devices可查看
-        pack='com.twistedplane.sealnote' #此為app的package名稱
-        activity='com.twistedplane.sealnote.SealnoteActivity'#此為app的主activity
+        # app = ('D:\\sealnote25.apk') # 此為受測app的apk檔路徑，需為絕對路徑
+        device='YT910R6JBG' # 此為設備號，手機連上電腦後在cmd下adb devices可查看
+        pack='com.twistedplane.sealnote' # 此為app的package名稱
+        activity='com.twistedplane.sealnote.SealnoteActivity'# 此為app的主activity
 
         desired_caps = {}
         desired_caps['platformName'] = 'Android'
         desired_caps['platformVersion'] = '4.4.3'
         desired_caps['deviceName'] = device
-        #desired_caps['app'] = app #加上此行，則每次執行測試時都會重新安裝一次app
+        # desired_caps['app'] = app # 加上此行，則每次執行測試時都會重新安裝一次app
         desired_caps['appPackage'] = pack
         desired_caps['appActivity'] = activity
 
         self.driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
-        self.driver.implicitly_wait(3000)
-        passwordTF_ID = 'com.twistedplane.sealnote:id/password_input'
-        commitBtn_ID = 'com.twistedplane.sealnote:id/password_action_button'
-        self.driver.find_element_by_id(passwordTF_ID).send_keys('123')
-        self.driver.find_element_by_id(commitBtn_ID).click()
+        # self.driver.implicitly_wait(10) # 隱性等待，全域影響，最長只等10秒
+        self.sealNotePO = sealNote_pageObject(self.driver)
 
     def tearDown(self):
         self.driver.quit()
 
-    def testCreateNewNote(self):
+    def testCreatePlainText(self):
         testTitle = 'testTitle'
-        testContent = 'OHO'
-        creatBtn_ID = 'com.twistedplane.sealnote:id/create_note_button'
-        self.driver.find_element_by_id(creatBtn_ID).click()
+        testContent = 'testContent'
+        self.sealNotePO.InitializePassword('123')
+        self.sealNotePO.ClickAddNewNoteButton()
+        self.sealNotePO.ClickAddPlainText()
+        self.sealNotePO.InputTitle(testTitle)
+        self.sealNotePO.InputContent(testContent)
+        self.sealNotePO.ClickSaveNoteButton()
 
-        titleTF_ID = 'com.twistedplane.sealnote:id/note_activity_title'
-        self.driver.find_element_by_id(titleTF_ID).send_keys(testTitle)
+        title = self.sealNotePO.GetNoteTitle().text
+        content = self.sealNotePO.GetNoteContent().text
+        self.assertEqual(title, testTitle)
+        self.assertEqual(content, testContent)
 
-        contentTF_ID = 'com.twistedplane.sealnote:id/note_activity_note'
-        self.driver.find_element_by_id(contentTF_ID).send_keys(testContent)
-
-        saveBtn_ID = 'com.twistedplane.sealnote:id/action_save_note'
-        self.driver.find_element_by_id(saveBtn_ID).click()
-
-        title = self.driver.find_element_by_id('com.twistedplane.sealnote:id/card_header_inner_simple_title')
-        content = self.driver.find_element_by_id('com.twistedplane.sealnote:id/cardcontent_note')
-        self.assertEqual(title.text, testTitle)
-        self.assertEqual(content.text, testContent)
+    def testCreateCardDetails(self):
+        cardName = 'MyVisa'
+        cardNumber = '123456789012'
+        self.sealNotePO.InitializePassword('123')
+        self.sealNotePO.ClickAddNewNoteButton()
+        self.sealNotePO.ClickAddCardDetails()
+        self.sealNotePO.InputCardName(cardName)
+        self.sealNotePO.InputCardNumber(cardNumber)
+        self.sealNotePO.InputCardValid('2019','2029')
+        self.sealNotePO.InputCardCVV('000')
+        # self.driver.hide_keyboard()
+        # self.driver.swipe(100, 300, 100, 100, 500)
+        self.sealNotePO.ClickSaveNoteButton()
         
+        content = self.sealNotePO.GetNoteContent().text
+        self.assertIn(cardName, content)
+        self.assertIn(cardNumber[-4:], content) # 信用卡卡號在首頁只會顯示最後4碼
+
+    def testCreateLoginDetails(self):
+        url = 'www.test.com'
+        account = 'testAccount'
+        password = 'testPassword'
+        self.sealNotePO.InitializePassword('123')
+        self.sealNotePO.ClickAddNewNoteButton()
+        self.sealNotePO.ClickAddLoginDetails()
+        self.sealNotePO.InputUrl(url)
+        self.sealNotePO.InputLoginAccount(account)
+        self.sealNotePO.InputLoginPassword(password)
+        self.sealNotePO.ClickSaveNoteButton()
+        
+        content = self.sealNotePO.GetNoteContent().text
+        self.assertIn(url, content)
+        self.assertIn(account, content)
+
 if __name__ == '__main__':
     unittest.main()

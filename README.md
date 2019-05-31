@@ -1,10 +1,17 @@
 ## My first Mobile App Automated Testing with Appium!  
 使用Appium + python內建的unittest模組，做e2e UI自動化測試  
+>檔案架構  
+>sealNote_pageObject.py  `-> 實做Page Object pattern`  
+>test_sealNote.py  `-> 測試執行主程式`  
+
 測試app為SealNote，是一款附有密碼鎖的記事本app  
 作者原始碼Github:https://github.com/vishesh/sealnote#sealnote  
 
-## 附錄:Appium環境架設
+### 附錄:Appium環境架設
 Appium的環境架設需要做的工作特別多  
+網路上又一堆過時的資料，踩雷踩的特別辛苦  
+將環境架設過程留個紀錄，方便以後自己看  
+
 ### 1.安裝java環境  
 如果只是執行自動化測試，安裝JRE即可  
 >JRE下載:https://java.com/zh_TW/download/  
@@ -42,7 +49,7 @@ NodeJS安裝好後使用npm命令安裝Appium與appium-doctor(可以檢查appium
 ```
 
 ### 4.設置環境變數
-終於到最後了(汗)  
+終於再將以下路徑加到環境變數就好了  
 
 | 環境變數     | 值                             |
 |--------------|--------------------------------|
