@@ -25,6 +25,34 @@ class SealNoteTest(unittest.TestCase):
     def tearDown(self):
         self.driver.quit()
 
+    def testWeakPassword(self):
+        testPassword = '123'
+        self.sealNotePO.InputPassword(testPassword)
+
+        passwordStrength = self.sealNotePO.GetPasswordStrength().text
+        self.assertEqual(passwordStrength, "Weak")
+
+    def testSoSoPassword(self):
+        testPassword = 'it2b8kmxa'
+        self.sealNotePO.InputPassword(testPassword)
+
+        passwordStrength = self.sealNotePO.GetPasswordStrength().text
+        self.assertEqual(passwordStrength, "So-so")
+
+    def testGoodPassword(self):
+        testPassword = 'V35bsNhh9'
+        self.sealNotePO.InputPassword(testPassword)
+
+        passwordStrength = self.sealNotePO.GetPasswordStrength().text
+        self.assertEqual(passwordStrength, "Good")
+
+    def testStrongPassword(self):
+        testPassword = 'a!wn=nggWGP-b85e'
+        self.sealNotePO.InputPassword(testPassword)
+
+        passwordStrength = self.sealNotePO.GetPasswordStrength().text
+        self.assertEqual(passwordStrength, "Strong")        
+
     def testCreatePlainText(self):
         testTitle = 'testTitle'
         testContent = 'testContent'

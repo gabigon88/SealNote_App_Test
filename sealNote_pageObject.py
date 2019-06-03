@@ -11,12 +11,19 @@ class sealNote_pageObject(object):
     def close(self):
         self.driver.close()
 
-    def InitializePassword(self, password):
+    def InputPassword(self, password):
         passwordTF_ID = 'com.twistedplane.sealnote:id/password_input'
-        commitBtn_ID = 'com.twistedplane.sealnote:id/password_action_button'
         self.wait.until(EC.visibility_of_element_located((By.ID, passwordTF_ID)))
         self.driver.find_element_by_id(passwordTF_ID).send_keys(password)
+
+    def InitializePassword(self, password):
+        commitBtn_ID = 'com.twistedplane.sealnote:id/password_action_button'
+        self.InputPassword(password)
         self.driver.find_element_by_id(commitBtn_ID).click()
+
+    def GetPasswordStrength(self):
+        passworAssess_ID = 'com.twistedplane.sealnote:id/password_meter_text'
+        return self.driver.find_element_by_id(passworAssess_ID)
 
     def ClickAddNewNoteButton(self):
         creatBtn_ID = 'com.twistedplane.sealnote:id/action_new_note'
