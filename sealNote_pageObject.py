@@ -3,32 +3,43 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-class sealNote_pageObject(object):
+class BasePage(object):
     def __init__(self, _driver):
         self.driver = _driver
         self.wait = WebDriverWait(_driver, 10)
-
+    
     def close(self):
         self.driver.close()
 
+class InitializePasswordPage(BasePage):
+    def __init__(self, _driver):
+        super(InitializePasswordPage, self).__init__(_driver)
+        startBtn_ID = 'com.twistedplane.sealnote:id/password_action_button'
+        self.wait.until(EC.visibility_of_element_located((By.ID, startBtn_ID)))
+    
     def InputPassword(self, password):
         passwordTF_ID = 'com.twistedplane.sealnote:id/password_input'
-        self.wait.until(EC.visibility_of_element_located((By.ID, passwordTF_ID)))
         self.driver.find_element_by_id(passwordTF_ID).send_keys(password)
+        return self
 
-    def InitializePassword(self, password):
-        commitBtn_ID = 'com.twistedplane.sealnote:id/password_action_button'
-        self.InputPassword(password)
-        self.driver.find_element_by_id(commitBtn_ID).click()
+    def ClickStartButton(self):
+        startBtn_ID = 'com.twistedplane.sealnote:id/password_action_button'
+        self.driver.find_element_by_id(startBtn_ID).click()
+        return self
 
     def GetPasswordStrength(self):
         passworAssess_ID = 'com.twistedplane.sealnote:id/password_meter_text'
-        return self.driver.find_element_by_id(passworAssess_ID)
+        return self.driver.find_element_by_id(passworAssess_ID).text
 
-    def ClickAddNewNoteButton(self):
-        creatBtn_ID = 'com.twistedplane.sealnote:id/action_new_note'
-        self.wait.until(EC.visibility_of_element_located((By.ID, creatBtn_ID)))
-        self.driver.find_element_by_id(creatBtn_ID).click()
+class NotesPage(BasePage):
+    def __init__(self, _driver):
+        super(NotesPage, self).__init__(_driver)
+        addBtn_ID = 'com.twistedplane.sealnote:id/action_new_note'
+        self.wait.until(EC.visibility_of_element_located((By.ID, addBtn_ID)))
+
+    def ClickAddButton(self):
+        addBtn_ID = 'com.twistedplane.sealnote:id/action_new_note'
+        self.driver.find_element_by_id(addBtn_ID).click()
 
     def ClickAddPlainText(self):
         self.driver.find_elements_by_id('android:id/title')[0].click()
@@ -38,11 +49,21 @@ class sealNote_pageObject(object):
 
     def ClickAddLoginDetails(self):
         self.driver.find_elements_by_id('android:id/title')[2].click()
-                
-    def ClickSaveNoteButton(self):
-        saveBtn_ID = 'com.twistedplane.sealnote:id/action_save_note'
-        self.driver.find_element_by_id(saveBtn_ID).click()
-    
+
+    def GetNoteTitle(self):
+        noteTitle_ID = 'com.twistedplane.sealnote:id/card_header_inner_simple_title'
+        return self.driver.find_element_by_id(noteTitle_ID).text
+
+    def GetNoteContent(self):
+        noteContent_ID = 'com.twistedplane.sealnote:id/cardcontent_note'
+        return self.driver.find_element_by_id(noteContent_ID).text
+
+class AddNotesPage(BasePage):
+    def __init__(self, _driver):
+        super(AddNotesPage, self).__init__(_driver)
+        titleTF_ID = 'com.twistedplane.sealnote:id/note_activity_title'
+        self.wait.until(EC.visibility_of_element_located((By.ID, titleTF_ID)))
+   
     def InputTags(self, tag):
         tagTF_ID = 'com.twistedplane.sealnote:id/note_activity_tags'
         self.driver.find_element_by_id(tagTF_ID).send_keys(tag)
@@ -51,11 +72,17 @@ class sealNote_pageObject(object):
     def InputTitle(self, title):
         titleTF_ID = 'com.twistedplane.sealnote:id/note_activity_title'
         self.driver.find_element_by_id(titleTF_ID).send_keys(title)
-    
+
+    def ClickSaveNoteButton(self):
+        saveBtn_ID = 'com.twistedplane.sealnote:id/action_save_note'
+        self.driver.find_element_by_id(saveBtn_ID).click()
+
+class AddPlainTextPage(AddNotesPage):
     def InputContent(self, content):
         contentTF_ID = 'com.twistedplane.sealnote:id/note_activity_note'
         self.driver.find_element_by_id(contentTF_ID).send_keys(content)
     
+class AddCardDetailsPage(AddNotesPage):    
     def InputCardName(self, cardName):
         cardNameTF_ID = 'com.twistedplane.sealnote:id/note_card_name'
         self.driver.find_element_by_id(cardNameTF_ID).send_keys(cardName)
@@ -74,10 +101,11 @@ class sealNote_pageObject(object):
         cardCVVTF_ID = 'com.twistedplane.sealnote:id/note_card_cvv'
         self.driver.find_element_by_id(cardCVVTF_ID).send_keys(cvvNumber)
     
-    def InputCardAdditionalNote(self, content):
+    def InputAdditionalNotes(self, content):
         cardAdditionalNoteTF_ID = 'com.twistedplane.sealnote:id/note_card_note'
         self.driver.find_element_by_id(cardAdditionalNoteTF_ID).send_keys(content)
 
+class AddLoginDetailsPage(AddNotesPage):    
     def InputUrl(self, url):
         urlTF_ID = 'com.twistedplane.sealnote:id/note_login_url'
         self.driver.find_element_by_id(urlTF_ID).send_keys(url)
@@ -90,16 +118,10 @@ class sealNote_pageObject(object):
         loginPasswordTF_ID = 'com.twistedplane.sealnote:id/note_login_password'
         self.driver.find_element_by_id(loginPasswordTF_ID).send_keys(password)   
 
-    def InputLoginAdditionalNote(self, content):
+    def InputAdditionalNotes(self, content):
         loginAdditionalNoteTF_ID = 'com.twistedplane.sealnote:id/note_additional_note'
         self.driver.find_element_by_id(loginAdditionalNoteTF_ID).send_keys(content)
+    
 
-    def GetNoteTitle(self):
-        noteTitle_ID = 'com.twistedplane.sealnote:id/card_header_inner_simple_title'
-        return self.driver.find_element_by_id(noteTitle_ID)
-
-    def GetNoteContent(self):
-        noteContent_ID = 'com.twistedplane.sealnote:id/cardcontent_note'
-        return self.driver.find_element_by_id(noteContent_ID)
 
 

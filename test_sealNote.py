@@ -1,7 +1,7 @@
 import unittest
 from time import sleep
 from appium import webdriver
-from sealNote_pageObject import sealNote_pageObject
+from sealNote_pageObject import *
 
 class SealNoteTest(unittest.TestCase):
     def setUp(self):
@@ -20,69 +20,78 @@ class SealNoteTest(unittest.TestCase):
 
         self.driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
         # self.driver.implicitly_wait(10) # 隱性等待，全域影響，最長只等10秒
-        self.sealNotePO = sealNote_pageObject(self.driver)
 
     def tearDown(self):
         self.driver.quit()
 
     def testWeakPassword(self):
         testPassword = '123'
-        self.sealNotePO.InputPassword(testPassword)
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InputPassword(testPassword)
 
-        passwordStrength = self.sealNotePO.GetPasswordStrength().text
+        passwordStrength = set_password_page.GetPasswordStrength()
         self.assertEqual(passwordStrength, "Weak")
 
     def testSoSoPassword(self):
         testPassword = 'it2b8kmxa'
-        self.sealNotePO.InputPassword(testPassword)
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InputPassword(testPassword)
 
-        passwordStrength = self.sealNotePO.GetPasswordStrength().text
+        passwordStrength = set_password_page.GetPasswordStrength()
         self.assertEqual(passwordStrength, "So-so")
 
     def testGoodPassword(self):
         testPassword = 'V35bsNhh9'
-        self.sealNotePO.InputPassword(testPassword)
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InputPassword(testPassword)
 
-        passwordStrength = self.sealNotePO.GetPasswordStrength().text
+        passwordStrength = set_password_page.GetPasswordStrength()
         self.assertEqual(passwordStrength, "Good")
 
     def testStrongPassword(self):
         testPassword = 'a!wn=nggWGP-b85e'
-        self.sealNotePO.InputPassword(testPassword)
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InputPassword(testPassword)
 
-        passwordStrength = self.sealNotePO.GetPasswordStrength().text
+        passwordStrength = set_password_page.GetPasswordStrength()
         self.assertEqual(passwordStrength, "Strong")        
 
     def testCreatePlainText(self):
         testTitle = 'testTitle'
         testContent = 'testContent'
-        self.sealNotePO.InitializePassword('123')
-        self.sealNotePO.ClickAddNewNoteButton()
-        self.sealNotePO.ClickAddPlainText()
-        self.sealNotePO.InputTitle(testTitle)
-        self.sealNotePO.InputContent(testContent)
-        self.sealNotePO.ClickSaveNoteButton()
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InputPassword('123')
+        set_password_page.ClickStartButton()
+        notes_page = NotesPage(self.driver)
+        notes_page.ClickAddButton()
+        notes_page.ClickAddPlainText()
+        add_plain_text_page = AddPlainTextPage(self.driver)
+        add_plain_text_page.InputTitle(testTitle)
+        add_plain_text_page.InputContent(testContent)
+        add_plain_text_page.ClickSaveNoteButton()
 
-        title = self.sealNotePO.GetNoteTitle().text
-        content = self.sealNotePO.GetNoteContent().text
+        title = notes_page.GetNoteTitle()
+        content = notes_page.GetNoteContent()
         self.assertEqual(title, testTitle)
         self.assertEqual(content, testContent)
 
     def testCreateCardDetails(self):
         cardName = 'MyVisa'
         cardNumber = '123456789012'
-        self.sealNotePO.InitializePassword('123')
-        self.sealNotePO.ClickAddNewNoteButton()
-        self.sealNotePO.ClickAddCardDetails()
-        self.sealNotePO.InputCardName(cardName)
-        self.sealNotePO.InputCardNumber(cardNumber)
-        self.sealNotePO.InputCardValid('2019','2029')
-        self.sealNotePO.InputCardCVV('000')
-        # self.driver.hide_keyboard()
-        # self.driver.swipe(100, 300, 100, 100, 500)
-        self.sealNotePO.ClickSaveNoteButton()
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InputPassword('123')
+        set_password_page.ClickStartButton()
+        notes_page = NotesPage(self.driver)
+        notes_page.ClickAddButton()
+        notes_page.ClickAddCardDetails()
+        add_card_details_page = AddCardDetailsPage(self.driver)
+        add_card_details_page.InputCardName(cardName)
+        add_card_details_page.InputCardNumber(cardNumber)
+        add_card_details_page.InputCardValid('2019','2029')
+        add_card_details_page.InputCardCVV('000')
+        add_card_details_page.ClickSaveNoteButton()
         
-        content = self.sealNotePO.GetNoteContent().text
+        content = notes_page.GetNoteContent()
         self.assertIn(cardName, content)
         self.assertIn(cardNumber[-4:], content) # 信用卡卡號在首頁只會顯示最後4碼
 
@@ -90,15 +99,19 @@ class SealNoteTest(unittest.TestCase):
         url = 'www.test.com'
         account = 'testAccount'
         password = 'testPassword'
-        self.sealNotePO.InitializePassword('123')
-        self.sealNotePO.ClickAddNewNoteButton()
-        self.sealNotePO.ClickAddLoginDetails()
-        self.sealNotePO.InputUrl(url)
-        self.sealNotePO.InputLoginAccount(account)
-        self.sealNotePO.InputLoginPassword(password)
-        self.sealNotePO.ClickSaveNoteButton()
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InputPassword('123')
+        set_password_page.ClickStartButton()
+        notes_page = NotesPage(self.driver)
+        notes_page.ClickAddButton()
+        notes_page.ClickAddLoginDetails()
+        add_login_details_page = AddLoginDetailsPage(self.driver)
+        add_login_details_page.InputUrl(url)
+        add_login_details_page.InputLoginAccount(account)
+        add_login_details_page.InputLoginPassword(password)
+        add_login_details_page.ClickSaveNoteButton()
         
-        content = self.sealNotePO.GetNoteContent().text
+        content = notes_page.GetNoteContent()
         self.assertIn(url, content)
         self.assertIn(account, content)
 
