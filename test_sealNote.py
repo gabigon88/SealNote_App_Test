@@ -4,15 +4,22 @@ from appium import webdriver
 from sealNote_pageObject import *
 
 class SealNoteTest(unittest.TestCase):
-    def setUp(self):
-        # app = ('D:\\sealnote25.apk') # 此為受測app的apk檔路徑，需為絕對路徑
+    def setUp(self):        
+        ''' 我的實體手機 '''
         device='YT910R6JBG' # 此為設備號，手機連上電腦後在cmd下adb devices可查看
+        androidVer = '4.4.3' # 此為設備號android版本
+        
+        ''' 夜神模擬器 '''
+        # device='127.0.0.1:62001'
+        # androidVer = '5'
+
+        # app = ('D:\\sealnote25.apk') # 此為受測app的apk檔路徑，需為絕對路徑
         pack='com.twistedplane.sealnote' # 此為app的package名稱
-        activity='com.twistedplane.sealnote.SealnoteActivity'# 此為app的主activity
+        activity='com.twistedplane.sealnote.SealnoteActivity' # 此為app的主activity
 
         desired_caps = {}
         desired_caps['platformName'] = 'Android'
-        desired_caps['platformVersion'] = '4.4.3'
+        desired_caps['platformVersion'] = androidVer
         desired_caps['deviceName'] = device
         # desired_caps['app'] = app # 加上此行，則每次執行測試時都會重新安裝一次app
         desired_caps['appPackage'] = pack
@@ -114,6 +121,50 @@ class SealNoteTest(unittest.TestCase):
         content = notes_page.GetNoteContent()
         self.assertIn(url, content)
         self.assertIn(account, content)
+
+    def testArchiveNote(self):
+        testTitle = 'testTitle'
+        testContent = 'testContent'
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InputPassword('123')
+        set_password_page.ClickStartButton()
+        notes_page = NotesPage(self.driver)
+        notes_page.ClickAddButton().ClickAddPlainText()
+        add_plain_text_page = AddPlainTextPage(self.driver)
+        add_plain_text_page.InputTitle(testTitle)
+        add_plain_text_page.InputContent(testContent)
+        add_plain_text_page.ClickSaveNoteButton()
+        notes_page.OpenNoteOf(0)
+        add_plain_text_page.ClickArchiveButton()
+        notes_page.ClickMenuButton().ClickArchiveButton()
+        archive_page = ArchivePage(self.driver)
+
+        title = archive_page.GetNoteTitle()
+        content = archive_page.GetNoteContent()
+        self.assertEqual(title, testTitle)
+        self.assertEqual(content, testContent)
+
+    def testDeleteNote(self):
+        testTitle = 'testTitle'
+        testContent = 'testContent'
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InputPassword('123')
+        set_password_page.ClickStartButton()
+        notes_page = NotesPage(self.driver)
+        notes_page.ClickAddButton().ClickAddPlainText()
+        add_plain_text_page = AddPlainTextPage(self.driver)
+        add_plain_text_page.InputTitle(testTitle)
+        add_plain_text_page.InputContent(testContent)
+        add_plain_text_page.ClickSaveNoteButton()
+        notes_page.OpenNoteOf(0)
+        add_plain_text_page.ClickDeleteButton()
+        notes_page.ClickMenuButton().ClickTrashButton()
+        trash_page = TrashPage(self.driver)
+
+        title = trash_page.GetNoteTitle()
+        content = trash_page.GetNoteContent()
+        self.assertEqual(title, testTitle)
+        self.assertEqual(content, testContent)
 
 if __name__ == '__main__':
     unittest.main()

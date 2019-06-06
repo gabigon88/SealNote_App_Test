@@ -20,26 +20,52 @@ class InitializePasswordPage(BasePage):
     def InputPassword(self, password):
         passwordTF_ID = 'com.twistedplane.sealnote:id/password_input'
         self.driver.find_element_by_id(passwordTF_ID).send_keys(password)
-        return self
 
     def ClickStartButton(self):
         startBtn_ID = 'com.twistedplane.sealnote:id/password_action_button'
         self.driver.find_element_by_id(startBtn_ID).click()
-        return self
 
     def GetPasswordStrength(self):
         passworAssess_ID = 'com.twistedplane.sealnote:id/password_meter_text'
         return self.driver.find_element_by_id(passworAssess_ID).text
 
-class NotesPage(BasePage):
+class HomePage(BasePage):
     def __init__(self, _driver):
-        super(NotesPage, self).__init__(_driver)
-        addBtn_ID = 'com.twistedplane.sealnote:id/action_new_note'
-        self.wait.until(EC.visibility_of_element_located((By.ID, addBtn_ID)))
+        super(HomePage, self).__init__(_driver)
+        menuBtn_ID = 'android:id/up'
+        self.wait.until(EC.visibility_of_element_located((By.ID, menuBtn_ID)))
 
+    def ClickMenuButton(self):
+        menuBtn_ID = 'android:id/up'
+        self.driver.find_element_by_id(menuBtn_ID).click()
+        return self
+    
+    def ClickNotesButton(self):
+        self.driver.find_elements_by_id('com.twistedplane.sealnote:id/text1')[0].click()
+
+    def ClickArchiveButton(self):
+        self.driver.find_elements_by_id('com.twistedplane.sealnote:id/text1')[1].click()
+
+    def ClickTrashButton(self):
+        self.driver.find_elements_by_id('com.twistedplane.sealnote:id/text1')[2].click()
+
+    def GetNoteTitle(self):
+        noteTitle_ID = 'com.twistedplane.sealnote:id/card_header_inner_simple_title'
+        return self.driver.find_element_by_id(noteTitle_ID).text
+
+    def GetNoteContent(self):
+        noteContent_ID = 'com.twistedplane.sealnote:id/cardcontent_note'
+        return self.driver.find_element_by_id(noteContent_ID).text
+    
+    def OpenNoteOf(self, index):
+        listNotes_ID = 'com.twistedplane.sealnote:id/list_cardId'
+        self.driver.find_elements_by_id(listNotes_ID)[index].click()
+    
+class NotesPage(HomePage):
     def ClickAddButton(self):
         addBtn_ID = 'com.twistedplane.sealnote:id/action_new_note'
         self.driver.find_element_by_id(addBtn_ID).click()
+        return self
 
     def ClickAddPlainText(self):
         self.driver.find_elements_by_id('android:id/title')[0].click()
@@ -49,14 +75,6 @@ class NotesPage(BasePage):
 
     def ClickAddLoginDetails(self):
         self.driver.find_elements_by_id('android:id/title')[2].click()
-
-    def GetNoteTitle(self):
-        noteTitle_ID = 'com.twistedplane.sealnote:id/card_header_inner_simple_title'
-        return self.driver.find_element_by_id(noteTitle_ID).text
-
-    def GetNoteContent(self):
-        noteContent_ID = 'com.twistedplane.sealnote:id/cardcontent_note'
-        return self.driver.find_element_by_id(noteContent_ID).text
 
 class AddNotesPage(BasePage):
     def __init__(self, _driver):
@@ -77,6 +95,14 @@ class AddNotesPage(BasePage):
         saveBtn_ID = 'com.twistedplane.sealnote:id/action_save_note'
         self.driver.find_element_by_id(saveBtn_ID).click()
 
+    def ClickArchiveButton(self):
+        archiveBtn_ID = 'com.twistedplane.sealnote:id/action_archive'
+        self.driver.find_element_by_id(archiveBtn_ID).click()
+
+    def ClickDeleteButton(self):
+        deleteBtn_ID = 'com.twistedplane.sealnote:id/action_note_delete'
+        self.driver.find_element_by_id(deleteBtn_ID).click()
+        
 class AddPlainTextPage(AddNotesPage):
     def InputContent(self, content):
         contentTF_ID = 'com.twistedplane.sealnote:id/note_activity_note'
@@ -121,7 +147,9 @@ class AddLoginDetailsPage(AddNotesPage):
     def InputAdditionalNotes(self, content):
         loginAdditionalNoteTF_ID = 'com.twistedplane.sealnote:id/note_additional_note'
         self.driver.find_element_by_id(loginAdditionalNoteTF_ID).send_keys(content)
-    
 
+class ArchivePage(HomePage):
+    pass
 
-
+class TrashPage(HomePage):
+    pass

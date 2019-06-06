@@ -1,11 +1,18 @@
 ## My first Mobile App Automated Testing with Appium!  
 使用Appium + python內建的unittest模組，做e2e UI自動化測試  
->檔案架構  
->sealNote_pageObject.py  `-> 實做Page Object pattern`  
->test_sealNote.py  `-> 測試執行主程式`  
 
 測試app為SealNote，是一款附有密碼鎖的記事本app  
 作者原始碼Github:https://github.com/vishesh/sealnote#sealnote  
+
+### 檔案架構  
+>sealNote_pageObject.py  `-> 實做Page Object pattern`  
+>test_sealNote.py  `-> 測試執行主程式`  
+
+### UML檔  
+![image](sealNote_pageObjectUML.png)
+圖中抽像類別的部分並沒有實際在程式碼中宣告與實做，只是使用上的概念是abstract
+>sealNote_pageObject.puml  `-> PlantUML畫UML的檔案`  
+>sealNote_pageObject.png  `-> UML圖檔`   
 
 ### 附錄:Appium環境架設
 Appium的環境架設需要做的工作特別多  

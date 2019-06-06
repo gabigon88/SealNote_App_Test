@@ -1,0 +1,18 @@
+@startuml
+
+BasePage <|-- InitializePasswordPage
+BasePage <|-- HomePage
+HomePage <|-- NotesPage
+HomePage <|-- ArchivePage
+HomePage <|-- TrashPage
+BasePage <|-- AddNotesPage
+AddNotesPage <|-- AddPlainTextPage
+AddNotesPage <|-- AddCardDetailsPage
+AddNotesPage <|-- AddLoginDetailsPage
+NotesPage ..> AddNotesPage : 使用
+
+abstract BasePage
+abstract HomePage
+abstract AddNotesPage
+
+@enduml
