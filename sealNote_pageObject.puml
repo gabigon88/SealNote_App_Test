@@ -6,6 +6,7 @@ HomePage <|-- NotesPage
 HomePage <|-- ArchivePage
 HomePage <|-- TrashPage
 BasePage <|-- AddNotesPage
+BasePage <|-- EditTagsPage
 AddNotesPage <|-- AddPlainTextPage
 AddNotesPage <|-- AddCardDetailsPage
 AddNotesPage <|-- AddLoginDetailsPage

@@ -29,6 +29,33 @@ class InitializePasswordPage(BasePage):
         passworAssess_ID = 'com.twistedplane.sealnote:id/password_meter_text'
         return self.driver.find_element_by_id(passworAssess_ID).text
 
+class EditTagsPage(BasePage):
+    def __init__(self, _driver):
+        super(EditTagsPage, self).__init__(_driver)
+        goBackBtn_ID = 'android:id/up'
+        self.wait.until(EC.visibility_of_element_located((By.ID, goBackBtn_ID)))
+
+    def GoBackPage(self):
+        goBackBtn_ID = 'android:id/up'
+        self.driver.find_element_by_id(goBackBtn_ID).click()
+
+    def RenameTagOf(self, index, NewTagName):
+        listTags_ID = 'com.twistedplane.sealnote:id/text1'
+        renameTF_ID = 'com.twistedplane.sealnote:id/input_rename'
+        renameBtn_ID = 'android:id/button1'
+        self.driver.find_elements_by_id(listTags_ID)[index].click()
+        self.driver.find_element_by_id(renameTF_ID).claer()
+        self.driver.find_element_by_id(renameTF_ID).send_keys(NewTagName)
+        self.driver.find_element_by_id(renameBtn_ID).click()
+
+    def DeleteTagOf(self, index):
+        listDeleteBtn_ID = 'com.twistedplane.sealnote:id/delete_button'
+        self.driver.find_elements_by_id(listDeleteBtn_ID)[index].click()
+
+    def GetTagNameOf(self, index):
+        listTags_ID = 'com.twistedplane.sealnote:id/text1'
+        return self.driver.find_elements_by_id(listTags_ID)[index].text
+
 class HomePage(BasePage):
     def __init__(self, _driver):
         super(HomePage, self).__init__(_driver)
@@ -40,14 +67,31 @@ class HomePage(BasePage):
         self.driver.find_element_by_id(menuBtn_ID).click()
         return self
     
-    def ClickNotesButton(self):
+    def ClickGoNotesPage(self):
         self.driver.find_elements_by_id('com.twistedplane.sealnote:id/text1')[0].click()
 
-    def ClickArchiveButton(self):
+    def ClickGoArchivePage(self):
         self.driver.find_elements_by_id('com.twistedplane.sealnote:id/text1')[1].click()
 
-    def ClickTrashButton(self):
+    def ClickGoTrashPage(self):
         self.driver.find_elements_by_id('com.twistedplane.sealnote:id/text1')[2].click()
+
+    def ClickOverflowButton(self):
+        overflowBtn_AccessID = '更多選項'
+        self.driver.find_element_by_accessibility_id(overflowBtn_AccessID).click()
+        return self
+    
+    def ClickEditTags(self):
+        self.driver.find_elements_by_id('android:id/title')[0].click()
+    
+    def ClickSettings(self):
+        self.driver.find_elements_by_id('android:id/title')[1].click()
+
+    def ClickAbout(self):
+        self.driver.find_elements_by_id('android:id/title')[2].click()
+
+    def ClickLogout(self):
+        self.driver.find_elements_by_id('android:id/title')[3].click()
 
     def GetNoteTitle(self):
         noteTitle_ID = 'com.twistedplane.sealnote:id/card_header_inner_simple_title'
@@ -82,10 +126,11 @@ class AddNotesPage(BasePage):
         titleTF_ID = 'com.twistedplane.sealnote:id/note_activity_title'
         self.wait.until(EC.visibility_of_element_located((By.ID, titleTF_ID)))
    
-    def InputTags(self, tag):
+    def InputTags(self, tags):
         tagTF_ID = 'com.twistedplane.sealnote:id/note_activity_tags'
-        self.driver.find_element_by_id(tagTF_ID).send_keys(tag)
-        self.driver.keyevent(66) # 鍵盤事件，66為TAB鍵
+        inputTags = " ".join(tags) # send_keys()每次輸入時會清空text field，只好先組合要輸入的tag
+        self.driver.find_element_by_id(tagTF_ID).send_keys(inputTags)
+        self.driver.keyevent(62) # 鍵盤事件，62為空白鍵
         
     def InputTitle(self, title):
         titleTF_ID = 'com.twistedplane.sealnote:id/note_activity_title'

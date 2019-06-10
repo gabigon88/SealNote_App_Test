@@ -9,10 +9,10 @@
 >test_sealNote.py  `-> 測試執行主程式`  
 
 ### UML檔  
-![image](sealNote_pageObjectUML.png)
-圖中抽像類別的部分並沒有實際在程式碼中宣告與實做，只是使用上的概念是abstract
+![image](sealNote_pageObjectUML.png)  
+圖中抽像類別的部分並沒有實際在程式碼中宣告與實做，只是使用上的概念是abstract class  
 >sealNote_pageObject.puml  `-> PlantUML畫UML的檔案`  
->sealNote_pageObject.png  `-> UML圖檔`   
+>sealNote_pageObject.png  `-> UML圖檔`  
 
 ### 附錄:Appium環境架設
 Appium的環境架設需要做的工作特別多  
