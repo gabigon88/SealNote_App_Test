@@ -24,10 +24,18 @@ class InitializePasswordPage(BasePage):
     def ClickStartButton(self):
         startBtn_ID = 'com.twistedplane.sealnote:id/password_action_button'
         self.driver.find_element_by_id(startBtn_ID).click()
+     
+    def InitializePassword(self, password='123'):
+        """ 初次開啟app時，設定密碼 """
+        self.InputPassword(password)
+        self.ClickStartButton()
 
     def GetPasswordStrength(self):
         passworAssess_ID = 'com.twistedplane.sealnote:id/password_meter_text'
         return self.driver.find_element_by_id(passworAssess_ID).text
+
+    def AssertPasswordStrength(self, strength):
+        assert self.GetPasswordStrength() == strength
 
 class EditTagsPage(BasePage):
     def __init__(self, _driver):
@@ -76,6 +84,15 @@ class HomePage(BasePage):
     def ClickGoTrashPage(self):
         self.driver.find_elements_by_id('com.twistedplane.sealnote:id/text1')[2].click()
 
+    def GoToNotesPage(self):
+        self.ClickMenuButton().ClickGoNotesPage()
+    
+    def GoToArchivePage(self):
+        self.ClickMenuButton().ClickGoArchivePage()
+
+    def GoToTrashPage(self):
+        self.ClickMenuButton().ClickGoTrashPage() 
+
     def ClickOverflowButton(self):
         overflowBtn_AccessID = '更多選項'
         self.driver.find_element_by_accessibility_id(overflowBtn_AccessID).click()
@@ -92,6 +109,9 @@ class HomePage(BasePage):
 
     def ClickLogout(self):
         self.driver.find_elements_by_id('android:id/title')[3].click()
+
+    def GoToEditTagsPage(self):
+        self.ClickOverflowButton().ClickEditTags() 
 
     def GetNoteTitle(self):
         noteTitle_ID = 'com.twistedplane.sealnote:id/card_header_inner_simple_title'
@@ -119,6 +139,26 @@ class NotesPage(HomePage):
 
     def ClickAddLoginDetails(self):
         self.driver.find_elements_by_id('android:id/title')[2].click()
+    
+    def ToCreatePlainText(self, title='testTitle', content='testContent', tag=None):
+        """ 建立一個PlainText的Note """
+        self.ClickAddButton().ClickAddPlainText()
+        add_plain_text_page = AddPlainTextPage(self.driver)
+        add_plain_text_page.InputTitle(title)
+        add_plain_text_page.InputContent(content)
+        if tag != None:
+            add_plain_text_page.InputTags(tag)
+        add_plain_text_page.ClickSaveNoteButton()
+    
+    def ToArchiveNoteOf(self, index):
+        self.OpenNoteOf(index)
+        add_plain_text_page = AddPlainTextPage(self.driver)
+        add_plain_text_page.ClickArchiveButton()
+    
+    def ToDeleteNoteOf(self, index):
+        self.OpenNoteOf(index)
+        add_plain_text_page = AddPlainTextPage(self.driver)
+        add_plain_text_page.ClickDeleteButton()
 
 class AddNotesPage(BasePage):
     def __init__(self, _driver):

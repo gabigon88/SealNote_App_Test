@@ -9,7 +9,7 @@ class SealNoteTest(unittest.TestCase):
         device='YT910R6JBG' # 此為設備號，手機連上電腦後在cmd下adb devices可查看
         androidVer = '4.4.3' # 此為設備號android版本
         
-        ''' 夜神模擬器 '''
+        # ''' 夜神模擬器 '''
         # device='127.0.0.1:62001'
         # androidVer = '5'
 
@@ -35,58 +35,33 @@ class SealNoteTest(unittest.TestCase):
         testPassword = '123'
         set_password_page = InitializePasswordPage(self.driver)
         set_password_page.InputPassword(testPassword)
-
-        passwordStrength = set_password_page.GetPasswordStrength()
-        self.assertEqual(passwordStrength, "Weak")
+        set_password_page.AssertPasswordStrength("Weak")
 
     def testSoSoPassword(self):
         testPassword = 'it2b8kmxa'
         set_password_page = InitializePasswordPage(self.driver)
         set_password_page.InputPassword(testPassword)
-
-        passwordStrength = set_password_page.GetPasswordStrength()
-        self.assertEqual(passwordStrength, "So-so")
+        set_password_page.AssertPasswordStrength("So-so")
 
     def testGoodPassword(self):
         testPassword = 'V35bsNhh9'
         set_password_page = InitializePasswordPage(self.driver)
         set_password_page.InputPassword(testPassword)
-
-        passwordStrength = set_password_page.GetPasswordStrength()
-        self.assertEqual(passwordStrength, "Good")
+        set_password_page.AssertPasswordStrength("Good")
 
     def testStrongPassword(self):
         testPassword = 'a!wn=nggWGP-b85e'
         set_password_page = InitializePasswordPage(self.driver)
         set_password_page.InputPassword(testPassword)
-
-        passwordStrength = set_password_page.GetPasswordStrength()
-        self.assertEqual(passwordStrength, "Strong")        
-
-    def toInitializePassword(self, password='123'):
-        """ 初次開啟app時，設定密碼 """
-        set_password_page = InitializePasswordPage(self.driver)
-        set_password_page.InputPassword('123')
-        set_password_page.ClickStartButton()
-
-    def toCreatePlainText(self, title='testTitle', content='testContent', tag=None):
-        """ 建立一個PlainText的Note """
-        global notes_page, add_plain_text_page # 要使用全域變數，其他呼叫此函式的function還用會到這些page
-        notes_page = NotesPage(self.driver)
-        notes_page.ClickAddButton()
-        notes_page.ClickAddPlainText()
-        add_plain_text_page = AddPlainTextPage(self.driver)
-        add_plain_text_page.InputTitle(title)
-        add_plain_text_page.InputContent(content)
-        if tag != None:
-            add_plain_text_page.InputTags(tag)
-        add_plain_text_page.ClickSaveNoteButton()
+        set_password_page.AssertPasswordStrength("Strong")
 
     def testCreatePlainText(self):
         testTitle = 'testTitle'
         testContent = 'testContent'
-        self.toInitializePassword()
-        self.toCreatePlainText(testTitle, testContent)
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InitializePassword()
+        notes_page = NotesPage(self.driver)
+        notes_page.ToCreatePlainText(testTitle, testContent)
 
         title = notes_page.GetNoteTitle()
         content = notes_page.GetNoteContent()
@@ -96,7 +71,8 @@ class SealNoteTest(unittest.TestCase):
     def testCreateCardDetails(self):
         cardName = 'MyVisa'
         cardNumber = '123456789012'
-        self.toInitializePassword()
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InitializePassword()
         notes_page = NotesPage(self.driver)
         notes_page.ClickAddButton()
         notes_page.ClickAddCardDetails()
@@ -115,7 +91,8 @@ class SealNoteTest(unittest.TestCase):
         url = 'www.test.com'
         account = 'testAccount'
         password = 'testPassword'
-        self.toInitializePassword()
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InitializePassword()
         notes_page = NotesPage(self.driver)
         notes_page.ClickAddButton()
         notes_page.ClickAddLoginDetails()
@@ -130,23 +107,26 @@ class SealNoteTest(unittest.TestCase):
         self.assertIn(account, content)
 
     def testAddTag(self):
-        testTag = 'testTag'
-        self.toInitializePassword()
-        self.toCreatePlainText(tag=testTag)
-        notes_page.ClickOverflowButton().ClickEditTags()
+        testTag = ('testTag',)
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InitializePassword()
+        notes_page = NotesPage(self.driver)
+        notes_page.ToCreatePlainText(tag=testTag)
+        notes_page.GoToEditTagsPage()
 
         edit_tags_page = EditTagsPage(self.driver)
         tag = edit_tags_page.GetTagNameOf(0)
-        self.assertEqual(tag, testTag)
+        self.assertIn(tag, testTag)
         
     def testArchiveNote(self):
         testTitle = 'testTitle'
         testContent = 'testContent'
-        self.toInitializePassword()
-        self.toCreatePlainText(testTitle, testContent)
-        notes_page.OpenNoteOf(0)
-        add_plain_text_page.ClickArchiveButton()
-        notes_page.ClickMenuButton().ClickGoArchivePage()
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InitializePassword()
+        notes_page = NotesPage(self.driver)
+        notes_page.ToCreatePlainText(testTitle, testContent)
+        notes_page.ToArchiveNoteOf(0)
+        notes_page.GoToArchivePage()
     
         archive_page = ArchivePage(self.driver)
         title = archive_page.GetNoteTitle()
@@ -157,11 +137,12 @@ class SealNoteTest(unittest.TestCase):
     def testDeleteNote(self):
         testTitle = 'testTitle'
         testContent = 'testContent'
-        self.toInitializePassword()
-        self.toCreatePlainText(testTitle, testContent)
-        notes_page.OpenNoteOf(0)
-        add_plain_text_page.ClickDeleteButton()
-        notes_page.ClickMenuButton().ClickGoTrashPage()
+        set_password_page = InitializePasswordPage(self.driver)
+        set_password_page.InitializePassword()
+        notes_page = NotesPage(self.driver)
+        notes_page.ToCreatePlainText(testTitle, testContent)
+        notes_page.ToDeleteNoteOf(0)
+        notes_page.GoToTrashPage()
     
         trash_page = TrashPage(self.driver)
         title = trash_page.GetNoteTitle()
