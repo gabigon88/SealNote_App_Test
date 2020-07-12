@@ -24,6 +24,9 @@ class SealNoteTest(unittest.TestCase):
         # desired_caps['app'] = app # 加上此行，則每次執行測試時都會重新安裝一次app
         desired_caps['appPackage'] = pack
         desired_caps['appActivity'] = activity
+        # 因為安卓是比較老的版本，使用的是 UIAutomator1
+        # 新安卓系統使用 UIAutomator2，新版本的 appium 默認使用UIAutomator2，不指定會報錯
+        desired_caps['automationName'] = "UiAutomator1" 
 
         self.driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
         # self.driver.implicitly_wait(10) # 隱性等待，全域影響，最長只等10秒
